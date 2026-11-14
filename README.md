@@ -1,6 +1,6 @@
 # Le Tran Lam Vinh: portfolio
 
-A four-page portfolio styled after Persona 3 Reload, with a three.js water background, a live date and time widget, original tarot cards, a Dawn mode, and a music player in the header shaped like the game's MP3 player.
+A four-page portfolio styled after Persona 3 Reload, with a three.js water background, a live date and time widget, tarot cards from your sheet, a Dawn mode, and a music player in the header shaped like the game's MP3 player.
 
 ```
 index.html      Home
@@ -9,7 +9,7 @@ projects.html   Projects
 contact.html    Contact
 css/style.css   All styles
 js/water.js     three.js water shader (palette follows the time of day, or Dawn)
-js/tarot.js     Tarot cards: original stained-glass style art, one arcana per page
+js/tarot.js     Tarot cards: the card art from assets/tarot/ (cut unaltered from your sheet, including back.png, the card back); drawn cards only show if a picture fails
 js/main.js      Header, sun and moon switch, calendar, menu, page changes
 js/player.js    Music player
 assets/audio/   color-your-night.mp3 (the header player track)
@@ -36,6 +36,11 @@ Then open the repository on GitHub: Settings, Pages, Build and deployment, Deplo
 - `Esc` opens the menu, and `Esc` again closes it. `M` also opens it.
 - The sun and moon switch (top right) turns Dawn on and off. The menu has a Dawn row that does the same. The choice is remembered.
 - Arrow keys move through the menu, `Enter` confirms.
+
+## Portrait and logos
+
+- Portrait: `assets/img/vinh.jpg` (4:5 crop). Replace the file to change it. It shows in a duotone that follows the theme (blue by day, plum and peach in Dawn), and in full colour when you hover it.
+- Project logos: each `.logo` tile in the HTML tries to load the site's logo and falls back to its initials. Pathfinder uses its own logo file, Humber ASV, GitHub and LinkedIn use the site's favicon. For a logo of your own, save it in `assets/logos/` and set the `src` of that tile's `<img>` to it.
 
 ## Edit your content
 

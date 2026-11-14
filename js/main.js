@@ -51,12 +51,16 @@
     '<header class="site-head">' +
     '<div class="pod" id="pod" role="group" aria-label="Music player">' +
     '<span class="ring" aria-hidden="true"></span><span class="plug" aria-hidden="true"></span>' +
+    '<span class="phones" aria-hidden="true">' +
+    '<svg class="cord" viewBox="0 0 200 40" preserveAspectRatio="none"><path d="M200 6 C176 40 128 40 100 26 C70 12 34 22 0 8" vector-effect="non-scaling-stroke"/><path class="c2" d="M200 10 C170 30 140 34 110 30 C74 26 40 36 0 20" vector-effect="non-scaling-stroke"/></svg>' +
+    '<svg class="cans" viewBox="0 0 70 70"><path class="hook" d="M14 30 C6 6 40 -2 52 18"/><circle class="cup" cx="34" cy="40" r="22"/><circle class="cup2" cx="34" cy="40" r="14"/><circle cx="34" cy="40" r="4.5" class="dot"/></svg>' +
+    '</span>' +
     '<div class="lcd" aria-live="polite"><div class="artist" id="p-artist"></div><div class="tw"><span class="title" id="p-title"></span></div><i class="meter" id="p-meter"></i></div>' +
     '<button class="pbtn" id="p-prev" type="button" aria-label="Previous track"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 5v14l-10-7z"/><rect x="5" y="5" width="3" height="14"/></svg></button>' +
     '<button class="disc" id="p-play" type="button" aria-label="Play"><span class="platter"></span><span class="hub"><svg id="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l14 8-14 8z"/></svg><svg id="i-pause" viewBox="0 0 24 24" aria-hidden="true" hidden><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg></span></button>' +
     '<button class="pbtn" id="p-next" type="button" aria-label="Next track"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5v14l10-7z"/><rect x="16" y="5" width="3" height="14"/></svg></button>' +
     '<button class="pbtn" id="p-add" type="button" aria-label="Add your own music" title="Add your own music"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4h2v7h7v2h-7v7h-2v-7H4v-2h7z"/></svg></button>' +
-    '<button class="list-btn" id="p-list" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu" title="Open the menu (Esc)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v2.5H4zM4 10.75h16v2.5H4zM4 15.5h16V18H4z"/></svg>MENU<kbd aria-hidden="true">Esc</kbd></button>' +
+    '<button class="list-btn" id="p-list" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="menu" title="Open the list (Esc)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v2.5H4zM4 10.75h16v2.5H4zM4 15.5h16V18H4z"/></svg>LIST</button>' +
     '<input id="p-file" type="file" accept="audio/*" multiple hidden>' +
     '</div>' +
     '<div class="head-r">' +
@@ -73,11 +77,30 @@
     '</header>' +
     '<div class="menu" id="menu" role="dialog" aria-modal="true" aria-labelledby="menu-title" hidden>' +
     '<p class="m-ghost" aria-hidden="true">Portfolio</p>' +
-    '<div class="m-inner"><div><h2 class="m-title" id="menu-title">Menu</h2><ul class="m-list" id="m-list"></ul></div>' +
-    '<aside class="m-detail" aria-live="polite"><div class="tcard" id="m-card" aria-hidden="true"></div><p class="m-arc" id="m-arc"></p><p class="m-desc" id="m-desc"></p></aside></div>' +
+    '<div class="m-inner"><div><h2 class="m-title" id="menu-title">List</h2><ul class="m-list" id="m-list"></ul></div>' +
+    '<aside class="m-detail" aria-live="polite"><div class="tcard is-img" id="m-card" aria-hidden="true"><span class="mc-in"><span class="mc-f"></span><span class="mc-b"></span></span></div><p class="m-arc" id="m-arc"></p><p class="m-desc" id="m-desc"></p></aside></div>' +
     '<div class="m-hint"><button class="m-key" id="m-ok" type="button"><kbd>Enter</kbd>Confirm</button><button class="m-key" id="m-back" type="button"><kbd>Esc</kbd>Close</button></div>' +
     '</div>';
+  /* Duotone for the portrait: maps the photo's brightness onto the theme's two colours, so the photo sits in the
+     water palette (blue by day, plum and peach at dawn). Hover shows the real colours (see .p-nat in the CSS). */
+  function duo(id, r, g, b) {
+    return '<filter id="' + id + '" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.33 0.55 0.12 0 0 0.33 0.55 0.12 0 0 0.33 0.55 0.12 0 0 0 0 0 1 0"/>' +
+      '<feComponentTransfer><feFuncR type="table" tableValues="' + r + '"/><feFuncG type="table" tableValues="' + g + '"/><feFuncB type="table" tableValues="' + b + '"/></feComponentTransfer></filter>';
+  }
+  html = '<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>' +
+    duo("duo-day", "0.016 0.11 0.92", "0.067 0.61 0.99", "0.37 1 1") +
+    duo("duo-dawn", "0.16 1 1", "0.086 0.435 0.945", "0.41 0.57 0.79") +
+    "</defs></svg>" + html;
   document.body.insertAdjacentHTML("afterbegin", html);
+
+  /* Logo tiles show the site's logo when it loads and keep the initials when it does not. */
+  Array.prototype.forEach.call(document.querySelectorAll(".logo img"), function (img) {
+    var tile = img.parentNode;
+    function ok() { tile.classList.add("has-img"); }
+    function bad() { img.remove(); }
+    if (img.complete) { img.naturalWidth > 0 ? ok() : bad(); }
+    else { img.addEventListener("load", ok); img.addEventListener("error", bad); }
+  });
 
   var modeBtn = document.getElementById("mode");
   modeBtn.addEventListener("click", toggleDark);
@@ -167,52 +190,74 @@
       b.querySelector("small").textContent = it.label;
       b.querySelector("b").textContent = it.act === "hour" ? hourVal() : it.val;
       b.querySelector(".m-sub").textContent = it.sub;
-      b.addEventListener("mouseenter", function () { select(i, false); });
+      b.addEventListener("pointermove", function (e) { if (e.pointerType === "touch" || i === sel) return; select(i, false); });
+      b.addEventListener("pointerdown", function (e) { if (e.pointerType === "touch" && i !== sel) select(i, false); });
       b.addEventListener("click", function () { select(i, false); activate(i); });
       li.appendChild(b);
       listEl.appendChild(li);
       return b;
     });
   }
-  function select(i, focus) {
-    var changed = i !== sel || !cardEl.firstChild;
+  var T = window.LTLTarot;
+  var faceEl = cardEl.querySelector(".mc-f");
+  var backEl = cardEl.querySelector(".mc-b");
+  if (T) { T.preload(PAGES.map(function (p) { return p.card; }).concat(["back"])); }
+  backEl.style.backgroundImage = "url(assets/tarot/back.png)";
+  function playCard(cls) {
+    if (reduce) return;
+    cardEl.classList.remove("deal", "swap");
+    void cardEl.offsetWidth;
+    cardEl.classList.add(cls);
+  }
+  function select(i, focus, first) {
+    var changed = i !== sel;
     sel = i;
     rows.forEach(function (r, k) {
-      r.classList.toggle("sel", k === i);
+      var on = k === i;
+      if (r.classList.contains("sel") !== on) r.classList.toggle("sel", on);
       r.setAttribute("aria-current", PAGES[k].id === page ? "page" : "false");
     });
     var it = PAGES[i];
-    if (window.LTLTarot) window.LTLTarot.fill(cardEl, it.card);
-    if (changed && !reduce) {
-      cardEl.classList.remove("flip");
-      void cardEl.offsetWidth;
-      cardEl.classList.add("flip");
-    }
+    faceEl.style.backgroundImage = "url(assets/tarot/" + it.card + ".png)";
+    if (first) playCard("deal");
+    else if (changed) playCard("swap");
     arcEl.textContent = it.num + " / Arcana: " + it.arc;
     descEl.textContent = it.desc;
-    if (focus) rows[i].focus();
+    if (focus) rows[i].focus({ preventScroll: true });
   }
-  function openMenu() {
+  var closeTimer = 0;
+  function finishClose() {
+    clearTimeout(closeTimer);
+    menu.classList.remove("closing");
+    menu.hidden = true;
+  }
+  function openMenu(viaKey) {
     if (isOpen) return;
+    clearTimeout(closeTimer);
+    menu.classList.remove("closing");
     build();
     isOpen = true;
     var start = 0;
     PAGES.forEach(function (p, i) { if (p.id === page) start = i; });
     sel = -1;
+    menu.classList.toggle("kb", viaKey === true);
     menu.hidden = false;
     document.documentElement.classList.add("menu-open");
     inertEls.forEach(function (el) { if (el) el.inert = true; });
     menu.inert = false;
     openBtn.setAttribute("aria-expanded", "true");
-    select(start, true);
+    select(start, true, true);
   }
+  /* Closing plays a short exit instead of vanishing, hands the page back at once, and can be interrupted by reopening. */
   function closeMenu() {
     if (!isOpen) return;
     isOpen = false;
-    menu.hidden = true;
     document.documentElement.classList.remove("menu-open");
     inertEls.forEach(function (el) { if (el) el.inert = false; });
     openBtn.setAttribute("aria-expanded", "false");
+    if (reduce) { menu.hidden = true; return; }
+    menu.classList.add("closing");
+    closeTimer = setTimeout(finishClose, 180);
   }
   function activate(i) {
     var it = PAGES[i];
@@ -226,7 +271,7 @@
   }
 
   /* The player lives in .site-head, which the menu makes inert. Keep it usable by closing first. */
-  openBtn.addEventListener("click", openMenu);
+  openBtn.addEventListener("click", function () { openMenu(false); });
   document.getElementById("m-ok").addEventListener("click", function () { activate(sel); });
   document.getElementById("m-back").addEventListener("click", function () { closeMenu(); openBtn.focus(); });
   document.addEventListener("keydown", function (e) {
@@ -238,7 +283,7 @@
       /* Esc opens the menu; M still works too. */
       if (e.key === "Escape" || e.key === "m" || e.key === "M") {
         e.preventDefault();
-        if (!e.repeat) openMenu();
+        if (!e.repeat) openMenu(true);
       }
       return;
     }
@@ -248,4 +293,90 @@
     else if (e.key === "Home") { e.preventDefault(); select(0, true); }
     else if (e.key === "End") { e.preventDefault(); select(PAGES.length - 1, true); }
   });
+
+  /* ---------- Persona-style hover menus ([data-pm]): hover, focus or tap an item to show its detail ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-pm]"), function (wrap) {
+    var items = Array.prototype.slice.call(wrap.querySelectorAll(".pm > li"));
+    var pane = wrap.querySelector(".pm-pane");
+    var cur = -1;
+    function pick(i) {
+      if (i === cur) return;
+      cur = i;
+      items.forEach(function (li, k) { li.classList.toggle("on", k === i); });
+      pane.innerHTML = items[i].querySelector(".pm-d").innerHTML + '<p class="pm-cmd">Command</p>';
+      pane.classList.remove("pop");
+      void pane.offsetWidth;
+      if (!reduce) pane.classList.add("pop");
+    }
+    wrap.classList.add("pm-js");
+    items.forEach(function (li, i) {
+      var b = li.querySelector(".pm-btn");
+      b.addEventListener("mouseenter", function () { pick(i); });
+      b.addEventListener("focus", function () { pick(i); });
+      b.addEventListener("click", function () { pick(i); if (window.innerWidth <= 900) pane.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" }); });
+      b.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+          e.preventDefault();
+          var n = (i + (e.key === "ArrowDown" ? 1 : items.length - 1)) % items.length;
+          items[n].querySelector(".pm-btn").focus();
+        }
+      });
+    });
+    pick(0);
+  });
+
+  /* ---------- Header ----------
+     Hides after a deliberate scroll down. Comes back at once when the pointer reaches the top edge or the header,
+     on scroll up, swipe right, or keyboard focus. Never hides while the pointer or focus is inside it. */
+  (function () {
+    var root = document.documentElement;
+    var head = document.querySelector(".site-head");
+    var zone = document.createElement("div");
+    zone.className = "head-zone";
+    zone.setAttribute("aria-hidden", "true");
+    document.body.appendChild(zone);
+    var tab = document.createElement("button");
+    tab.type = "button";
+    tab.className = "head-tab";
+    tab.setAttribute("aria-label", "Show the player and menu");
+    tab.innerHTML = '<svg viewBox="0 0 10 14" aria-hidden="true"><path d="M2 1l7 6-7 6z"/></svg>';
+    document.body.appendChild(tab);
+    var lastY = window.scrollY, down = 0, ticking = false, tx = 0, ty = 0, inside = false;
+    function setHide(h) {
+      if (h && (inside || menuIsOpen())) return;
+      if (root.classList.contains("head-hide") !== h) root.classList.toggle("head-hide", h);
+    }
+    function menuIsOpen() { return root.classList.contains("menu-open"); }
+    window.addEventListener("scroll", function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        ticking = false;
+        var y = window.scrollY, dy = y - lastY;
+        lastY = y;
+        if (y < 80) { down = 0; setHide(false); return; }
+        if (dy < -4) { down = 0; setHide(false); }
+        else if (dy > 0) { down += dy; if (down > 28) setHide(true); }
+      });
+    }, { passive: true });
+    /* hover in: the top strip and the header itself */
+    window.addEventListener("pointermove", function (e) {
+      if (e.pointerType === "touch") return;
+      if (e.clientY <= 56) { down = 0; setHide(false); }
+    }, { passive: true });
+    tab.addEventListener("click", function () { down = 0; setHide(false); var b = document.getElementById("p-list"); if (b) b.focus({ preventScroll: true }); });
+    tab.addEventListener("pointerenter", function (e) { if (e.pointerType !== "touch") { down = 0; setHide(false); } });
+    zone.addEventListener("pointerenter", function () { down = 0; setHide(false); });
+    document.addEventListener("mouseleave", function () { inside = false; });
+    if (head) {
+      head.addEventListener("pointerenter", function () { inside = true; setHide(false); });
+      head.addEventListener("pointerleave", function () { inside = false; });
+      head.addEventListener("focusin", function () { setHide(false); });
+    }
+    window.addEventListener("touchstart", function (e) { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+    window.addEventListener("touchend", function (e) {
+      var t = e.changedTouches[0], dx = t.clientX - tx, dy = t.clientY - ty;
+      if (dx > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) { down = 0; setHide(false); }
+    }, { passive: true });
+  })();
 })();

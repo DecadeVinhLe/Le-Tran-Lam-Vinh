@@ -3,11 +3,11 @@
    Each page uses one arcana, the same one the menu shows. Markup: <div class="tcard" data-arcana="fool"></div>.
    Needs no other file. Runs before main.js so the menu can build cards.
 
-   Want your own card pictures instead? Put fool.png, magician.png, chariot.png, death.png, star.png, moon.png,
+   The cards are the pictures in assets/tarot/ (USE_IMAGES). If one is missing, the drawn card below is used instead. File names: fool.png, magician.png, chariot.png, death.png, star.png, moon.png,
    sun.png and judgement.png in assets/tarot/ and set USE_IMAGES to true. Only use pictures you have the right to publish. */
 (function () {
   "use strict";
-  var USE_IMAGES = false;
+  var USE_IMAGES = true;
   var NS = "http://www.w3.org/2000/svg";
   var GROUP = 'fill="currentColor" stroke="currentColor" stroke-width="0" stroke-linecap="round" stroke-linejoin="round"';
   function L(d, w) { return '<path d="' + d + '" fill="none" stroke-width="' + (w || 4.5) + '"/>'; }
@@ -65,17 +65,34 @@
   document.body.insertAdjacentHTML("afterbegin",
     '<svg xmlns="' + NS + '" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>' + defs + "</defs></svg>");
 
+  /* Card art is the real sheet crop. It is applied straight away (no drawn card flashing first) and the drawn glyph card
+     only shows if the picture cannot load. Pictures are cached once so switching cards never waits. */
+  var SRC = "assets/tarot/";
+  var cache = {};
+  function load(name, ok, bad) {
+    var c = cache[name];
+    if (c && c.done) { c.ok ? ok && ok() : bad && bad(); return; }
+    if (!c) {
+      c = cache[name] = { done: false, ok: false, cbs: [] };
+      var im = new Image();
+      im.onload = function () { c.done = true; c.ok = true; c.cbs.forEach(function (f) { f[0] && f[0](); }); };
+      im.onerror = function () { c.done = true; c.ok = false; c.cbs.forEach(function (f) { f[1] && f[1](); }); };
+      im.src = SRC + name + ".png";
+    }
+    c.cbs.push([ok, bad]);
+  }
   function fill(el, id) {
     var c = CARDS[id];
     if (!c) return;
     el.setAttribute("data-arcana", id);
     el.innerHTML = '<span class="tc-pic"><svg class="tc-g" viewBox="0 0 64 64" aria-hidden="true"><use href="#g-' + id + '"/></svg></span><span class="tc-n">' + c.num + "</span>";
     if (USE_IMAGES) {
-      var pic = el.firstChild, im = new Image();
-      im.onload = function () { pic.style.backgroundImage = "url(" + im.src + ")"; pic.classList.add("has-img"); };
-      im.src = "assets/tarot/" + id + ".png";
+      el.style.backgroundImage = "url(" + SRC + id + ".png)";
+      el.classList.add("is-img");
+      load(id, null, function () { el.style.backgroundImage = ""; el.classList.remove("is-img"); });
     }
   }
+  function preload(ids) { ids.forEach(function (id) { load(id); }); }
   Array.prototype.forEach.call(document.querySelectorAll(".tcard[data-arcana]"), function (el) { fill(el, el.getAttribute("data-arcana")); });
-  window.LTLTarot = { fill: fill, cards: CARDS };
+  window.LTLTarot = { fill: fill, cards: CARDS, preload: preload, src: SRC };
 })();
