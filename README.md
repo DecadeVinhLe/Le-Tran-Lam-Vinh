@@ -17,7 +17,9 @@ assets/audio/   color-your-night.mp3 (the header player track)
 
 No build step. Open `index.html` in a browser, or serve the folder with any static server.
 ## Inspired from 
-![Alt text]([https://example.com/your-animation.gif](https://i.pinimg.com/originals/59/9d/0d/599d0d9ed46bee9838cf52f59c0ee0fb.gif))
+<p align="center">
+  <img src="assets/img/p3.gif" alt="Demo" width="600" />
+</p>
 ## Push to GitHub
 
 ```bash
