@@ -6,14 +6,16 @@
 <title>Le Tran Lam Portfolio</title>
 <meta name="description" content="Portfolio of Le Tran Lam Vinh: web developer, freelance web security tester and semiconductor student at Asia University.">
 <meta name="theme-color" content="#050f6e">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400;700&display=swap">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/base.css">
+<script src="js/theme.js"></script>
+<noscript><link rel="stylesheet" href="css/theme-p3.css"></noscript>
 </head>
 <body>
 <main id="main" data-page="home">
   <div class="wrap stack">
     <section class="hero" aria-label="Introduction">
       <div class="hero-text">
+        <p data-theme-only="jianghu" class="name-cn" lang="zh" aria-hidden="true">黎陳林榮</p>
         <p class="kicker">Portfolio / 2026</p>
         <h1 class="name"><span class="l1">Le Tran</span><span class="l2">Lam Vinh</span></h1>
         <p class="tagline">I build websites, test other people's websites for security holes, and study semiconductors. The goal is to become a semiconductor engineer.</p>
@@ -28,14 +30,17 @@
         </div>
       </div>
       <div class="hero-art">
-        <div class="tcard" data-arcana="moon" aria-hidden="true"></div>
-        <div class="tcard" data-arcana="magician" aria-hidden="true"></div>
+        <span data-theme-only="jianghu" class="enso" aria-hidden="true"></span>
+        <p data-theme-only="jianghu" class="vert" aria-hidden="true">以碼入道</p>
+        <div data-theme-only="p3" class="tcard" data-arcana="moon" aria-hidden="true"></div>
+        <div data-theme-only="p3" class="tcard" data-arcana="magician" aria-hidden="true"></div>
         <figure class="portrait">
           <div class="p-frame">
             <img class="p-duo" src="assets/img/vinh.jpg" alt="Portrait of Le Tran Lam Vinh with glasses, in a black jacket" width="572" height="715" decoding="async">
             <img class="p-nat" src="assets/img/vinh.jpg" alt="" width="572" height="715" aria-hidden="true" decoding="async">
           </div>
-          <figcaption><span>Arcana 0 / The Fool</span></figcaption>
+          <figcaption data-theme-only="jianghu"><span>Disciple Vinh</span></figcaption>
+          <figcaption data-theme-only="p3"><span>Arcana 0 / The Fool</span></figcaption>
         </figure>
       </div>
     </section>
@@ -44,14 +49,16 @@
       <div class="section-head"><h2 class="sub" id="feat-h">Featured work</h2><a href="projects.html">All projects</a></div>
       <div class="grid">
         <article class="card">
-          <div class="top"><span class="num" aria-hidden="true">0</span><span class="arcana"><span class="tcard mini" data-arcana="fool" aria-hidden="true"></span>Arcana: Fool</span></div>
+          <div data-theme-only="jianghu" class="top"><span class="seal mini" data-seal="s1" aria-hidden="true"></span><span class="arcana">Scroll I</span></div>
+          <div data-theme-only="p3" class="top"><span class="num" aria-hidden="true">0</span><span class="arcana"><span class="tcard mini" data-arcana="fool" aria-hidden="true"></span>Arcana: Fool</span></div>
           <div class="card-title"><span class="logo" data-initials="P" style="--lb:#eaf0f7" aria-hidden="true"><img src="assets/logos/pathfinder.png" alt="" width="66" height="75" loading="lazy" decoding="async"></span><h3>Pathfinder</h3></div>
           <p>A trip planner web app for Ho Chi Minh City, built by the Crusaders team for the Swin-Biz Rockstar competition.</p>
           <ul class="tags"><li>Web app</li><li>Team project</li><li>Ho Chi Minh City</li></ul>
           <div class="links-row"><a class="more" href="https://biz-pathfinder.netlify.app/" target="_blank" rel="noopener noreferrer"><span>Open the live site</span></a><a class="more" href="https://github.com/DecadeVinhLe/PathFinder" target="_blank" rel="noopener noreferrer"><span>View code on GitHub</span></a></div>
         </article>
         <article class="card">
-          <div class="top"><span class="num" aria-hidden="true">VII</span><span class="arcana"><span class="tcard mini" data-arcana="chariot" aria-hidden="true"></span>Arcana: Chariot</span></div>
+          <div data-theme-only="jianghu" class="top"><span class="seal mini" data-seal="s3" aria-hidden="true"></span><span class="arcana">Scroll III</span></div>
+          <div data-theme-only="p3" class="top"><span class="num" aria-hidden="true">VII</span><span class="arcana"><span class="tcard mini" data-arcana="chariot" aria-hidden="true"></span>Arcana: Chariot</span></div>
           <div class="card-title"><span class="logo" data-initials="BH" style="--lb:#000000" aria-hidden="true"><img src="assets/logos/bunny-hop.png" alt="" width="325" height="292" loading="lazy" decoding="async"></span><h3>Bunny Hop</h3></div>
           <p>A mobile game for Android, written in Java.</p>
           <ul class="tags"><li>Java</li><li>Android</li><li>Game</li></ul>
@@ -75,19 +82,22 @@
 
     <nav class="doors" aria-label="Pages">
       <a class="door" href="about.html">
-        <div class="top"><span class="num" aria-hidden="true">I</span><span class="tcard mini" data-arcana="magician" aria-hidden="true"></span></div>
+        <div data-theme-only="jianghu" class="top"><span class="seal mini" data-seal="path" aria-hidden="true"></span></div>
+        <div data-theme-only="p3" class="top"><span class="num" aria-hidden="true">I</span><span class="tcard mini" data-arcana="magician" aria-hidden="true"></span></div>
         <h2>About</h2>
         <p>Where I study, what I have worked on and where I want to go.</p>
         <span class="go">Open page</span>
       </a>
       <a class="door" href="projects.html">
-        <div class="top"><span class="num" aria-hidden="true">VII</span><span class="tcard mini" data-arcana="chariot" aria-hidden="true"></span></div>
+        <div data-theme-only="jianghu" class="top"><span class="seal mini" data-seal="sword" aria-hidden="true"></span></div>
+        <div data-theme-only="p3" class="top"><span class="num" aria-hidden="true">VII</span><span class="tcard mini" data-arcana="chariot" aria-hidden="true"></span></div>
         <h2>Projects</h2>
         <p>Pathfinder, Humber ASV, Bunnyhop, Bytecrawl and Lắng.</p>
         <span class="go">Open page</span>
       </a>
       <a class="door" href="contact.html">
-        <div class="top"><span class="num" aria-hidden="true">XX</span><span class="tcard mini" data-arcana="judgement" aria-hidden="true"></span></div>
+        <div data-theme-only="jianghu" class="top"><span class="seal mini" data-seal="post" aria-hidden="true"></span></div>
+        <div data-theme-only="p3" class="top"><span class="num" aria-hidden="true">XX</span><span class="tcard mini" data-arcana="judgement" aria-hidden="true"></span></div>
         <h2>Contact</h2>
         <p>GitHub, LinkedIn and the Humber ASV site.</p>
         <span class="go">Open page</span>
@@ -99,14 +109,10 @@
 <footer class="foot">
   <div class="wrap">
     <span>Le Tran Lam Vinh / Portfolio 2026</span>
-    <span>Fan-made style inspired by Persona 3 Reload. Not affiliated with Atlus or SEGA.</span>
+    <span data-theme-only="jianghu">Inspired by martial-arts worlds like Phantom Blade Zero. Original artwork. Not affiliated with S-GAME.</span>
+    <span data-theme-only="p3">Fan-made style inspired by Persona 3 Reload. Not affiliated with Atlus or SEGA.</span>
   </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/water.js"></script>
-<script src="js/tarot.js"></script>
-<script src="js/main.js"></script>
-<script src="js/player.js"></script>
 </body>
 </html>

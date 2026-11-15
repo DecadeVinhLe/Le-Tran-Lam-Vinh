@@ -1,0 +1,14 @@
+/* Shared by both themes. Everything else lives in css/theme-p3.css and css/theme-jianghu.css; theme.js loads only the one in use. */
+
+/* Parts of a page that belong to one theme only (the page markup holds both versions). */
+html[data-theme="p3"] [data-theme-only="jianghu"],
+html[data-theme="jianghu"] [data-theme-only="p3"] { display: none !important; }
+
+/* The curtain that sweeps across when you switch theme. It leaves in the new theme's colour, then lifts off the new page. */
+html.theme-leave::after, html.theme-arrive::after { content: ""; position: fixed; inset: 0; z-index: 99999; pointer-events: none; background: #0a3fbf; box-shadow: -14px 0 0 #00c2ff; }
+html[data-wipe="jianghu"].theme-leave::after, html[data-wipe="jianghu"].theme-arrive::after { background: #150c0a; box-shadow: -14px 0 0 #b3242a; }
+html.theme-leave::after { animation: theme-in 0.3s cubic-bezier(0.55, 0, 0.8, 0.4) both; }
+html.theme-arrive::after { animation: theme-out 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0.1s both; }
+@keyframes theme-in { from { transform: translateX(-102%); } to { transform: none; } }
+@keyframes theme-out { from { transform: none; } to { transform: translateX(102%); } }
+@media (prefers-reduced-motion: reduce) { html.theme-leave::after, html.theme-arrive::after { display: none; } }

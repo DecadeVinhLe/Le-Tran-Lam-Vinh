@@ -6,8 +6,9 @@
 <title>About | Le Tran Lam Vinh</title>
 <meta name="description" content="About Le Tran Lam Vinh: semiconductor student at Asia University, web developer and freelance web security tester.">
 <meta name="theme-color" content="#050f6e">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400;700&display=swap">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/base.css">
+<script src="js/theme.js"></script>
+<noscript><link rel="stylesheet" href="css/theme-p3.css"></noscript>
 </head>
 <body>
 <main id="main" data-page="about">
@@ -17,7 +18,8 @@
         <p class="eyebrow">Who is behind this</p>
         <h1 class="page-title">About</h1>
       </div>
-      <div class="tcard" data-arcana="magician" aria-hidden="true"></div>
+      <div data-theme-only="jianghu" class="seal big" data-seal="path" aria-hidden="true"></div>
+      <div data-theme-only="p3" class="tcard" data-arcana="magician" aria-hidden="true"></div>
     </header>
 
     <section class="pm-wrap gm" data-pm aria-label="About menu. Hover, focus or tap an item to read it. Arrow keys move between items.">
@@ -84,8 +86,10 @@
           <div class="pm-d">
             <h3>Outside of code</h3>
             <ul>
-              <li>Games: this site borrows its look from Persona 3 Reload (a fan-made style, not an official one)</li>
-              <li>Music: the player in the header plays "Color Your Night" by Shoji Meguro</li>
+              <li data-theme-only="jianghu">Games and martial-arts worlds: this site borrows its mood from wuxia and xianxia stories (original artwork, not official)</li>
+              <li data-theme-only="jianghu">Music: the player in the header plays "Hiện Thiên Duyên" (Vietsub and Pinyin version)</li>
+              <li data-theme-only="p3">Games: this site borrows its look from Persona 3 Reload (a fan-made style, not an official one)</li>
+              <li data-theme-only="p3">Music: the player in the header plays "Color Your Night" by Shoji Meguro</li>
               <li>Making small games, like Bunny Hop</li>
             </ul>
           </div>
@@ -119,14 +123,10 @@
 <footer class="foot">
   <div class="wrap">
     <span>Le Tran Lam Vinh / Portfolio 2026</span>
-    <span>Fan-made style inspired by Persona 3 Reload. Not affiliated with Atlus or SEGA.</span>
+    <span data-theme-only="jianghu">Inspired by martial-arts worlds like Phantom Blade Zero. Original artwork. Not affiliated with S-GAME.</span>
+    <span data-theme-only="p3">Fan-made style inspired by Persona 3 Reload. Not affiliated with Atlus or SEGA.</span>
   </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="js/water.js"></script>
-<script src="js/tarot.js"></script>
-<script src="js/main.js"></script>
-<script src="js/player.js"></script>
 </body>
 </html>
