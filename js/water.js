@@ -5,18 +5,19 @@
   if (!window.THREE) return;
 
   var PALETTES = {
-    morning: { top: "#8be8ff", mid: "#25a9f2", bot: "#0b4bbd", foam: "#ffffff", glow: 0 },
-    day: { top: "#43d3ff", mid: "#0a8ef0", bot: "#0a30b2", foam: "#eafaff", glow: 0 },
-    afternoon: { top: "#2cc6ff", mid: "#0b7ae6", bot: "#0a2299", foam: "#e2f7ff", glow: 0 },
-    evening: { top: "#17b4ff", mid: "#0a4fd8", bot: "#050f7a", foam: "#d6f3ff", glow: 0 },
-    night: { top: "#0f80d4", mid: "#0a2b9c", bot: "#030a4a", foam: "#b9e4ff", glow: 0 },
-    /* Dawn: coral at the surface, pink in the middle, indigo below, with a low sun and rays above. */
-    dawn: { top: "#ff9f7a", mid: "#c2569f", bot: "#2d1b73", foam: "#ffe9c4", glow: 1 }
+    morning: { top: "#8be8ff", mid: "#25a9f2", bot: "#0b4bbd", foam: "#ffffff", glow: 0, wave: 1 },
+    day: { top: "#43d3ff", mid: "#0a8ef0", bot: "#0a30b2", foam: "#eafaff", glow: 0, wave: 1 },
+    afternoon: { top: "#2cc6ff", mid: "#0b7ae6", bot: "#0a2299", foam: "#e2f7ff", glow: 0, wave: 1 },
+    evening: { top: "#17b4ff", mid: "#0a4fd8", bot: "#050f7a", foam: "#d6f3ff", glow: 0, wave: 0.8 },
+    /* Night: the green moon of the reference, kept deep and low in saturation so it stays easy on the eyes. */
+    night: { top: "#2c6d5d", mid: "#123f3a", bot: "#051a1c", foam: "#9fc7a4", glow: 0, wave: 0.4 },
+    /* Sunset reference: deep violet sky above, magenta clouds in the middle, red-coral and gold near the horizon, with a low sun and rays. */
+    dawn: { top: "#2a0e52", mid: "#b3307a", bot: "#e8505a", foam: "#ffd9a0", glow: 1, wave: 0.6 }
   };
 
   var VERT = "varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }";
   var FRAG = [
-    "uniform vec2 uRes; uniform float uTime; uniform float uGlow;",
+    "uniform vec2 uRes; uniform float uTime; uniform float uGlow; uniform float uWave;",
     "uniform vec3 uTop; uniform vec3 uMid; uniform vec3 uBot; uniform vec3 uFoam;",
     "uniform vec3 uPtr; uniform vec4 uPulse;",
     "varying vec2 vUv;",
@@ -52,7 +53,8 @@
     "  vec2 pc = vec2(uPulse.x * asp, uPulse.y);",
     "  float dc = length(p - pc); float front = age * 0.55;",
     "  rip += uPulse.w * sin((dc - front) * 45.0) * exp(-abs(dc - front) * 16.0) * exp(-age * 1.1);",
-    "  vec2 q = p + 0.018 * vec2(sin(p.y * 7.0 + uTime * 0.7), cos(p.x * 6.0 - uTime * 0.55)) + rip * 0.012;",
+    "  vec2 q = p + (0.018 + 0.016 * uWave) * vec2(sin(p.y * 7.0 + uTime * 0.7), cos(p.x * 6.0 - uTime * 0.55)) + rip * 0.012;",
+    "  q.y += 0.014 * uWave * sin(p.x * 4.0 + uTime * 0.8);",
     "  float surf = smoothstep(0.42, 0.0, depth);",
     "  vec2 v = voro(q * vec2(4.0, 9.0) + vec2(uTime * 0.04, 0.0), uTime);",
     "  float net = 1.0 - smoothstep(0.03, 0.10, v.y - v.x);",
@@ -64,6 +66,10 @@
     "  vec2 w = voro(q * vec2(2.2, 3.4) + vec2(-uTime * 0.03, uTime * 0.02), uTime * 0.7);",
     "  float net2 = 1.0 - smoothstep(0.02, 0.09, w.y - w.x);",
     "  col += uFoam * net2 * 0.07 * (1.0 - depth);",
+    "  float sw1 = sin(p.x * 4.2 + sin(p.y * 5.0 + uTime * 0.6) * 1.5 + uTime * 0.45);",
+    "  float sw2 = sin(p.x * 2.6 - p.y * 3.4 - uTime * 0.38 + sin(p.x * 3.0 + uTime * 0.5));",
+    "  float swell = smoothstep(0.6, 1.0, sw1) * 0.7 + smoothstep(0.7, 1.0, sw2) * 0.5;",
+    "  col += uFoam * swell * uWave * (0.04 + 0.09 * (1.0 - depth));",
     "  float ray = pow(max(0.0, sin((p.x + depth * 0.7) * 5.0 + uTime * 0.15)), 8.0) * smoothstep(1.0, 0.0, depth);",
     "  col += uFoam * ray * 0.06;",
     "  float b = bubbles(p, 4.0, 0.05, 1.0) + bubbles(p, 7.0, 0.09, 5.0) * 0.7;",
@@ -99,7 +105,7 @@
   var uniforms = {
     uRes: { value: new THREE.Vector2(1, 1) },
     uTime: { value: 0 },
-    uGlow: { value: 0 },
+    uGlow: { value: 0 }, uWave: { value: 1 },
     uTop: { value: cur.top }, uMid: { value: cur.mid }, uBot: { value: cur.bot }, uFoam: { value: cur.foam },
     uPtr: { value: new THREE.Vector3(0.5, 0.8, 0) },
     uPulse: { value: new THREE.Vector4(0.5, 0.5, -100, 0) }
@@ -107,11 +113,12 @@
   var mat = new THREE.ShaderMaterial({ uniforms: uniforms, vertexShader: VERT, fragmentShader: FRAG, depthTest: false, depthWrite: false });
   scene.add(new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), mat));
 
-  var tgtGlow = 0;
+  var tgtGlow = 0, tgtWave = 1;
   function setTargets(name, instant) {
     var p = PALETTES[name] || PALETTES.evening;
     tgtGlow = p.glow || 0;
-    if (instant) uniforms.uGlow.value = tgtGlow;
+    tgtWave = p.wave == null ? 1 : p.wave;
+    if (instant) { uniforms.uGlow.value = tgtGlow; uniforms.uWave.value = tgtWave; }
     ["top", "mid", "bot", "foam"].forEach(function (k) {
       tgt[k].set(p[k]);
       if (instant) cur[k].copy(tgt[k]);
@@ -145,6 +152,7 @@
     if (t - uniforms.uPulse.value.z > 4) uniforms.uPulse.value.w = 0;
     ["top", "mid", "bot", "foam"].forEach(function (k) { cur[k].lerp(tgt[k], 0.04); });
     uniforms.uGlow.value += (tgtGlow - uniforms.uGlow.value) * 0.04;
+    uniforms.uWave.value += (tgtWave - uniforms.uWave.value) * 0.04;
     draw();
     requestAnimationFrame(frame);
   }

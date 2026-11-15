@@ -13,13 +13,14 @@
     { id: "about", href: "about.html", card: "magician", num: "I", arc: "Magician", name: "About", sub: "Who I am", label: "Page", val: "2/4", desc: "My background, skills, studies and where I want to go." },
     { id: "projects", href: "projects.html", card: "chariot", num: "VII", arc: "Chariot", name: "Projects", sub: "Selected work", label: "Page", val: "3/4", desc: "Pathfinder, Humber ASV, Bunnyhop, Bytecrawl, Lắng and more." },
     { id: "contact", href: "contact.html", card: "judgement", num: "XX", arc: "Judgement", name: "Contact", sub: "Find me online", label: "Page", val: "4/4", desc: "GitHub, LinkedIn and the Humber ASV site." },
-    { act: "hour", card: "sun", num: "XIX", arc: "Sun", name: "Dawn", sub: "Sunrise colours", label: "Mode", desc: "Turn the water and panels to sunrise colours. The sun and moon switch in the header does the same." }
+    { act: "hour", card: "sun", num: "XIX", arc: "Sun", name: "Dark Hour", sub: "Would you believe me if I said that a day consists of more than 24 hours?", label: "Mode", desc: "Switch the water and panels to the Dark Hour colours. The sun and moon switch in the header does the same." }
   ];
 
   /* ---------- Dawn and time of day ----------
      Day follows the clock (morning to night). Dawn is the sunrise palette. The choice is saved under the old key "ltl-hour". */
   var dark = false;
-  try { dark = localStorage.getItem("ltl-hour") === "dark"; } catch (e) {}
+  var saved = null;
+  try { saved = localStorage.getItem("ltl-hour"); } catch (e) {}
 
   function todOf(h) {
     if (h >= 5 && h < 9) return { key: "morning", label: "Early Morning" };
@@ -28,15 +29,17 @@
     if (h >= 17 && h < 21) return { key: "evening", label: "Evening" };
     return { key: "night", label: "Late Night" };
   }
+  /* Two looks: Dark Hour is the calm green moon, Day is the waving blue water. Without a saved choice the clock decides. */
+  dark = saved === "dark" || saved === "night" ? true : saved === "day" ? false : todOf(new Date().getHours()).key === "night";
   function applyPalette() {
     var t = todOf(new Date().getHours());
-    document.documentElement.setAttribute("data-hour", dark ? "dark" : "day");
-    if (window.LTLWater) window.LTLWater.setPalette(dark ? "dawn" : t.key);
+    document.documentElement.setAttribute("data-hour", dark ? "night" : "day");
+    if (window.LTLWater) window.LTLWater.setPalette(dark ? "night" : t.key === "night" ? "evening" : t.key);
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", dark ? "#2a1668" : "#050f6e");
+    if (meta) meta.setAttribute("content", dark ? "#06191b" : "#050f6e");
     if (modeBtn) {
       modeBtn.setAttribute("aria-checked", dark ? "true" : "false");
-      modeBtn.title = dark ? "Switch to day colours" : "Switch to dawn colours";
+      modeBtn.title = dark ? "Switch to day colours" : "Switch to Dark Hour colours";
     }
   }
   function toggleDark() {
@@ -64,7 +67,7 @@
     '<input id="p-file" type="file" accept="audio/*" multiple hidden>' +
     '</div>' +
     '<div class="head-r">' +
-    '<button class="mode" id="mode" type="button" role="switch" aria-checked="false" aria-label="Dawn mode" title="Switch to dawn colours">' +
+    '<button class="mode" id="mode" type="button" role="switch" aria-checked="false" aria-label="Dark Hour mode" title="Switch to Dark Hour colours">' +
     '<span class="mode-knob" aria-hidden="true"></span>' +
     '<svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M11 1h2v4h-2zM11 19h2v4h-2zM1 11h4v2H1zM19 11h4v2h-4zM4.2 5.6l1.4-1.4 2.8 2.8-1.4 1.4zM15.6 17l1.4-1.4 2.8 2.8-1.4 1.4zM5.6 19.8l-1.4-1.4L7 15.6l1.4 1.4zM17 8.4l-1.4-1.4 2.8-2.8 1.4 1.4z"/></svg>' +
     '<svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a.6.6 0 0 0-.8-.7A9.7 9.7 0 1 0 21.2 15.4a.6.6 0 0 0-.7-.8z"/></svg>' +
@@ -90,6 +93,7 @@
   html = '<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>' +
     duo("duo-day", "0.016 0.11 0.92", "0.067 0.61 0.99", "0.37 1 1") +
     duo("duo-dawn", "0.16 1 1", "0.086 0.435 0.945", "0.41 0.57 0.79") +
+    duo("duo-night", "0.02 0.17 0.89", "0.09 0.34 0.94", "0.1 0.3 0.72") +
     "</defs></svg>" + html;
   document.body.insertAdjacentHTML("afterbegin", html);
 

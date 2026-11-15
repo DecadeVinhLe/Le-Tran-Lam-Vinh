@@ -1,7 +1,7 @@
 /* Le Tran Lam Vinh portfolio. Shared styles for every page.
    Look: Persona 3 Reload. A three.js water scene sits behind everything, content sits on deep panels,
    one accent colour, slanted blocks and cut corners echo the game's menus.
-   Two themes share every rule: Day (blue water, follows the time of day) and Dawn (sunrise colours, the sun and moon switch). */
+   Three themes share every rule: Day (blue water), Night (muted moon green, from 21:00 to 05:00) and Dark Hour (sunset colours, the sun and moon switch). */
 
 :root {
   --deep: #050f6e;
@@ -45,7 +45,7 @@
 
 /* Dawn: the colours of the sunrise reference. Same names, new values. */
 :root[data-hour="dark"] {
-  --deep: #2a1668;
+  --deep: #2a0e52;
   --muted: #ffe6dc;
   --accent: #ffb347;
   --accent-soft: #ffd9a3;
@@ -55,24 +55,58 @@
   --panel-hover: rgba(172, 58, 140, 0.92);
   --red: #ff4d6d;
   --shadow-ink: #43185f;
-  --row-bg: #7a2c9c;
-  --row-line: #ffb59a;
-  --sub-bg: #ffc47a;
+  --row-bg: #6e2a86;
+  --row-line: #ffa98f;
+  --sub-bg: #ffc27a;
   --sub-ink: #4a1250;
   --foot-bg: rgba(36, 12, 74, 0.66);
   --foot-line: rgba(255, 217, 163, 0.45);
-  --menu-glow: rgba(255, 190, 120, 0.55);
-  --menu-1: rgba(58, 22, 112, 0.93);
-  --menu-2: rgba(166, 58, 148, 0.88);
-  --menu-3: rgba(255, 142, 112, 0.84);
+  --menu-glow: rgba(255, 196, 110, 0.6);
+  --menu-1: rgba(42, 14, 82, 0.94);
+  --menu-2: rgba(179, 48, 122, 0.9);
+  --menu-3: rgba(240, 100, 80, 0.86);
   --ghost: rgba(52, 16, 84, 0.3);
   --card-bg: linear-gradient(170deg, #a23fa6 0%, #34196f 100%);
-  --bg-grad: linear-gradient(180deg, #ff9f7a 0, #c2569f 40%, #2d1b73 100%);
-  --scrim: linear-gradient(180deg, rgba(48, 16, 88, 0.2) 0, rgba(48, 16, 88, 0.05) 55%, transparent 100%);
+  --bg-grad: linear-gradient(180deg, #2a0e52 0, #b3307a 55%, #e8505a 100%);
+  --scrim: linear-gradient(0deg, rgba(42, 14, 82, 0.28) 0, rgba(42, 14, 82, 0.08) 45%, transparent 100%);
   --n1: #fff6df;
   --n2: #ffd98a;
   --n3: #ffa3b8;
   --n4: #e8bdff;
+}
+
+/* Night: the green moon of the reference, held down so it rests the eyes. Deep teal-green surfaces at low saturation,
+   with one pale moon-lime accent used sparingly. Text stays warm off-white for contrast. */
+:root[data-hour="night"] {
+  --deep: #06191b;
+  --ink: #f3f7e8;
+  --muted: #cfe0cc;
+  --accent: #cfe28e;
+  --accent-soft: #e2edb2;
+  --on-accent: #0b2320;
+  --panel: rgba(5, 30, 30, 0.76);
+  --panel-2: rgba(4, 22, 24, 0.58);
+  --panel-hover: rgba(40, 108, 94, 0.86);
+  --red: #e5504a;
+  --shadow-ink: #03211f;
+  --row-bg: #14483f;
+  --row-line: #86bba4;
+  --sub-bg: #b9d9a8;
+  --sub-ink: #0b2a22;
+  --foot-bg: rgba(3, 20, 22, 0.7);
+  --foot-line: rgba(207, 226, 142, 0.35);
+  --menu-glow: rgba(200, 225, 140, 0.38);
+  --menu-1: rgba(5, 30, 32, 0.94);
+  --menu-2: rgba(16, 70, 62, 0.9);
+  --menu-3: rgba(44, 112, 92, 0.86);
+  --ghost: rgba(3, 24, 22, 0.3);
+  --card-bg: linear-gradient(170deg, #15594c 0%, #06231f 100%);
+  --bg-grad: linear-gradient(180deg, #2a6b5c 0, #12453e 40%, #06191b 100%);
+  --scrim: transparent;
+  --n1: #f3f7e8;
+  --n2: #dfeab0;
+  --n3: #8cc7a8;
+  --n4: #c4e0b8;
 }
 
 * { box-sizing: border-box; }
@@ -438,6 +472,7 @@ h2.sub { font-weight: 900; font-size: clamp(1.5rem, 3.6vw, 2.1rem); letter-spaci
 .p-frame img { position: absolute; left: -9%; top: -2%; width: 118%; height: 106%; max-width: none; object-fit: cover; object-position: 50% 14%; transform: skewX(6deg); }
 .p-duo { filter: url(#duo-day); }
 :root[data-hour="dark"] .p-duo { filter: url(#duo-dawn); }
+:root[data-hour="night"] .p-duo { filter: url(#duo-night); }
 .p-nat { opacity: 0; transition: opacity 0.25s ease; }
 .portrait figcaption { white-space: nowrap; position: absolute; z-index: 2; left: -0.7rem; bottom: -0.8rem; padding: 3px 12px; background: #050b14; color: #ffffff; font: 700 0.68rem/1.5 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; transform: skewX(-12deg); }
 .portrait figcaption span { display: inline-block; transform: skewX(12deg); }
@@ -777,7 +812,7 @@ h2.sub { font-weight: 900; font-size: clamp(1.5rem, 3.6vw, 2.1rem); letter-spaci
 .pod .cans .dot { fill: #0a1f6b; }
 .list-btn kbd { display: none; }
 @media (max-width: 640px) { .pod .cans { right: -30px; width: 52px; height: 52px; top: -12px; } .pod .cord { right: -14px; } }
-.pod .cord { top: 52px; height: 46px; left: 10px; right: -40px; }
+.pod .cord { top: 30px; height: 30px; left: 10px; right: -40px; }
 .pod .cord path { stroke-width: 3.5px; }
 .pod .cans { width: 82px; height: 82px; right: -70px; top: -18px; }
 
@@ -803,3 +838,9 @@ html.menu-open .head-tab { display: none; }
 html.head-hide .head-zone { pointer-events: auto; }
 @media (hover: none) { .head-zone { display: none; } }
 @media (prefers-reduced-motion: reduce) { .pod, .head-r, html.head-hide .pod, html.head-hide .head-r { transition: none; } }
+
+/* GitHub mark: inline so it never depends on an outside favicon service */
+.gh-i { width: 1.05em; height: 1.05em; fill: currentColor; vertical-align: -0.17em; margin-right: 0.55em; flex: none; }
+.logo.has-svg::before { content: none; }
+.logo .gh-logo { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0.6rem; fill: #ffffff; transform: skewX(8deg); }
+.btn .gh-i, .more .gh-i, .go .gh-i { display: inline-block; }
