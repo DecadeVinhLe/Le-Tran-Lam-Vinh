@@ -28,6 +28,25 @@
   var saved = null;
   try { saved = JSON.parse(sessionStorage.getItem(KEY) || "null"); } catch (e) {}
 
+  /* Music fades out when you switch theme and back in as the new theme's curtain lifts (see js/theme.js). */
+  var fadeRaf = 0;
+  function fadeTo(v, ms) {
+    cancelAnimationFrame(fadeRaf);
+    if (reduce || !ms) { audio.volume = v; return; }
+    var from = audio.volume, t0 = performance.now();
+    (function step(now) {
+      var k = Math.min(1, Math.max(0, (now - t0) / ms));
+      audio.volume = from + (v - from) * k;
+      if (k < 1) fadeRaf = requestAnimationFrame(step);
+    })(t0);
+  }
+  if (window.LTLTheme && window.LTLTheme.arriving) {
+    audio.volume = 0;
+    window.addEventListener("ltl:theme-lift", function () { fadeTo(1, 1100); });
+    setTimeout(function () { if (audio.volume === 0) fadeTo(1, 600); }, 5000);
+  }
+  window.addEventListener("ltl:theme-leave", function () { if (playing) fadeTo(0, 380); persist(); });
+
   function ui() {
     pod.classList.toggle("playing", playing);
     iPlay.hidden = playing;

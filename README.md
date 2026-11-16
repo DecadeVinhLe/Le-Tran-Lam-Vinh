@@ -53,7 +53,8 @@ Then open the repository on GitHub: Settings, Pages, Build and deployment, Deplo
 - Colours of the water: `PALETTES` at the top of `js/water.js`. Dark Hour colours for panels and text: the `:root[data-hour="dark"]` block at the top of `css/style.css`.
 - Your own card pictures: put fool.png, magician.png, chariot.png, death.png, star.png, moon.png, sun.png and judgement.png in `assets/tarot/` and set `USE_IMAGES` to `true` at the top of `js/tarot.js`. Only use pictures you have the right to publish.
 - Tarot cards: change `data-arcana` on a `.tcard` element (fool, magician, chariot, death, star, moon, sun, judgement).
-- Music: `MAIN` at the top of `js/player.js`.
+- Music: Jianghu plays a two-song playlist, `TRACKS` at the top of `js/jianghu/player.js` (Hiện Thiên Duyên, then Bá Hổ Thuyết). Persona: `MAIN` at the top of `js/p3/player.js`.
+- Theme switch: the Persona/Jianghu button (or `T`) sweeps a curtain in the new look's colours, fades the music out, reloads, and lifts the curtain only after the new look has loaded, fading the music back in. Timings are in `css/base.css` (curtain) and `js/theme.js` (`LEAVE`, `HOLD`).
 
 ## Notes
 

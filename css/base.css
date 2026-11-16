@@ -4,11 +4,27 @@
 html[data-theme="p3"] [data-theme-only="jianghu"],
 html[data-theme="jianghu"] [data-theme-only="p3"] { display: none !important; }
 
-/* The curtain that sweeps across when you switch theme. It leaves in the new theme's colour, then lifts off the new page. */
-html.theme-leave::after, html.theme-arrive::after { content: ""; position: fixed; inset: 0; z-index: 99999; pointer-events: none; background: #0a3fbf; box-shadow: -14px 0 0 #00c2ff; }
-html[data-wipe="jianghu"].theme-leave::after, html[data-wipe="jianghu"].theme-arrive::after { background: #150c0a; box-shadow: -14px 0 0 #b3242a; }
-html.theme-leave::after { animation: theme-in 0.3s cubic-bezier(0.55, 0, 0.8, 0.4) both; }
-html.theme-arrive::after { animation: theme-out 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0.1s both; }
+/* The curtain that sweeps across when you switch theme. It leaves in the new theme's colour, holds (with the new theme's
+   glyph) while the page reloads and loads, then lifts off the new page. js/theme.js adds the classes:
+   theme-leave (covering), theme-arrive (still covering, new page), theme-lift (sliding away). */
+html.theme-leave::after, html.theme-arrive::after { content: ""; position: fixed; inset: 0; z-index: 99999; pointer-events: none; background: #0a3fbf; box-shadow: -14px 0 0 #00c2ff; will-change: transform; }
+html[data-wipe="jianghu"].theme-leave::after, html[data-wipe="jianghu"].theme-arrive::after { background: radial-gradient(ellipse at 50% 50%, #26120e 0%, #150c0a 62%, #0b0605 100%); box-shadow: -14px 0 0 #b3242a; }
+html.theme-leave::after { animation: theme-in 0.46s cubic-bezier(0.65, 0, 0.35, 1) both; }
+html.theme-arrive::after { transform: none; }
+html.theme-arrive.theme-lift::after { animation: theme-out 0.8s cubic-bezier(0.65, 0, 0.35, 1) both; }
 @keyframes theme-in { from { transform: translateX(-102%); } to { transform: none; } }
 @keyframes theme-out { from { transform: none; } to { transform: translateX(102%); } }
-@media (prefers-reduced-motion: reduce) { html.theme-leave::after, html.theme-arrive::after { display: none; } }
+
+/* The new theme's glyph, centred on the curtain: it settles in while the curtain closes and dissolves as it lifts. */
+html.theme-leave::before, html.theme-arrive::before { content: attr(data-glyph); position: fixed; left: 50%; top: 50%; z-index: 100000; pointer-events: none; color: #fff; font: 900 clamp(4rem, 14vw, 9rem)/1 "Archivo", system-ui, sans-serif; letter-spacing: 0.02em; text-shadow: 0 0 40px rgba(0, 194, 255, 0.55); transform: translate(-50%, -50%); }
+html[data-wipe="jianghu"].theme-leave::before, html[data-wipe="jianghu"].theme-arrive::before { color: #dcae60; font-family: "Noto Serif SC", "Songti SC", "STSong", serif; font-weight: 900; text-shadow: 0 0 44px rgba(179, 36, 42, 0.7); }
+html.theme-leave::before { animation: theme-glyph-in 0.46s cubic-bezier(0.22, 1, 0.36, 1) both; }
+html.theme-arrive::before { opacity: 1; }
+html.theme-arrive.theme-lift::before { animation: theme-glyph-out 0.45s ease-in both; }
+@keyframes theme-glyph-in { 0%, 45% { opacity: 0; transform: translate(-50%, -46%) scale(0.92); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+@keyframes theme-glyph-out { from { opacity: 1; transform: translate(-50%, -50%) scale(1); } to { opacity: 0; transform: translate(-50%, -54%) scale(1.06); } }
+
+/* The old page eases away under the curtain instead of freezing. */
+html.theme-leave body > main, html.theme-leave .site-head, html.theme-leave .pod { opacity: 0; transform: translateX(-18px); transition: opacity 0.34s ease, transform 0.4s cubic-bezier(0.4, 0, 1, 1); }
+
+@media (prefers-reduced-motion: reduce) { html.theme-leave::after, html.theme-arrive::after, html.theme-leave::before, html.theme-arrive::before { display: none; } }

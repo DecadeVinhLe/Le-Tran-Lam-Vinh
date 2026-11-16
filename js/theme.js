@@ -3,8 +3,9 @@
    parsed it loads only that theme's scripts, in order. The two looks never load together, so their styles cannot clash.
 
    Choosing: ?theme=p3 or ?theme=jianghu in the address, else the choice saved in this browser, else DEFAULT below.
-   Switching: any button with data-theme-toggle, or the T key. The page reloads in the other look, behind a short curtain,
-   and keeps its scroll position. The dark or light mode choice ("ltl-hour") is shared by both looks.
+   Switching: any button with data-theme-toggle, or the T key. A curtain in the new look's colours sweeps across, the music
+   fades out, the page reloads behind it, and the curtain lifts only once the new look has fully loaded (scripts, fonts,
+   scene), so you never see it build itself. Music fades back in as it lifts. The dark or light mode choice ("ltl-hour") is shared by both looks.
    To add a third look, add an entry to THEMES, a css/theme-*.css file and a js/<name>/ folder. */
 (function () {
   "use strict";
@@ -45,12 +46,33 @@
   document.write('<link rel="stylesheet" href="' + cur.fonts + '">');
   document.write('<link rel="stylesheet" href="css/theme-' + curId + '.css">');
 
-  /* Arriving from a switch: the curtain lifts. */
+  /* Arriving from a switch: the curtain is already covering the first paint. It waits for the page to finish loading
+     (and at least HOLD ms, so the glyph is seen), then lifts. A 3 s safety lifts it even if something never loads. */
+  var arriving = false;
   if (!reduce && read(WIPE, true)) {
     try { sessionStorage.removeItem(WIPE); } catch (e) {}
+    arriving = true;
     root.setAttribute("data-wipe", curId);
+    root.setAttribute("data-glyph", cur.glyph);
     root.classList.add("theme-arrive");
-    setTimeout(function () { root.classList.remove("theme-arrive"); }, 900);
+    var t0 = Date.now(), HOLD = 420, lifted = false;
+    var lift = function () {
+      if (lifted) return;
+      lifted = true;
+      setTimeout(function () {
+        requestAnimationFrame(function () {
+          root.classList.add("theme-lift");
+          window.dispatchEvent(new Event("ltl:theme-lift"));
+          setTimeout(function () {
+            root.classList.remove("theme-arrive", "theme-lift");
+            root.removeAttribute("data-glyph");
+            if (window.LTLTheme) window.LTLTheme.arriving = false;
+          }, 900);
+        });
+      }, Math.max(0, HOLD - (Date.now() - t0)));
+    };
+    window.addEventListener("load", lift);
+    setTimeout(lift, 3000);
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -63,27 +85,38 @@
   });
 
   var switching = false;
-  function toggle(viaKey) {
+  var LEAVE = 460; /* ms, matches theme-in in css/base.css */
+  function toggle() {
     if (switching) return;
     switching = true;
     write(KEY, other.id);
-    if (viaKey || reduce) { location.reload(); return; } /* keyboard: no curtain */
+    /* A ?theme= in the address would override the choice on reload, so drop it first. */
+    try { var u = new URL(location.href); if (u.searchParams.has("theme")) { u.searchParams.delete("theme"); history.replaceState(null, "", u.pathname + u.search + u.hash); } } catch (e) {}
+    if (reduce) { location.reload(); return; }
     write(WIPE, "1", true);
     root.setAttribute("data-wipe", other.id);
+    root.setAttribute("data-glyph", other.glyph);
     root.classList.add("theme-leave");
-    setTimeout(function () { location.reload(); }, 320);
+    window.dispatchEvent(new Event("ltl:theme-leave")); /* players fade the music out */
+    setTimeout(function () { location.reload(); }, LEAVE + 40);
   }
+  /* Coming back with the Back button can restore this page frozen mid-switch; undo it. */
+  window.addEventListener("pageshow", function (e) {
+    if (!e.persisted) return;
+    switching = false;
+    root.classList.remove("theme-leave", "theme-arrive", "theme-lift");
+  });
   document.addEventListener("click", function (e) {
     var b = e.target.closest && e.target.closest("[data-theme-toggle]");
-    if (b) { e.preventDefault(); toggle(false); }
+    if (b) { e.preventDefault(); toggle(); }
   });
   document.addEventListener("keydown", function (e) {
     if ((e.key !== "t" && e.key !== "T") || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
     var tag = (document.activeElement && document.activeElement.tagName) || "";
     if (/INPUT|TEXTAREA|SELECT/.test(tag) || root.classList.contains("menu-open")) return;
     e.preventDefault();
-    toggle(true);
+    toggle();
   });
 
-  window.LTLTheme = { current: cur, other: other, toggle: toggle };
+  window.LTLTheme = { current: cur, other: other, toggle: toggle, arriving: arriving };
 })();

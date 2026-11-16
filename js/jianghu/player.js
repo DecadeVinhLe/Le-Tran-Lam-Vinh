@@ -1,6 +1,8 @@
 /* Music player in the header (markup is injected by main.js).
-   Main track: assets/audio/hien-thien-duyen.mp3. The "+" button loads any other audio file for the visit.
-   Position and play state carry over to the next page through sessionStorage. */
+   Built-in playlist (TRACKS below): 1. hien-thien-duyen.mp3, 2. ba-ho-thuyet.mp3. They play in order and loop back to the first.
+   The "+" button adds any other audio file for the visit.
+   Track, position and play state carry over to the next page through sessionStorage.
+   Music fades out when you switch theme and fades back in once the new theme has loaded (see js/theme.js). */
 (function () {
   "use strict";
   var pod = document.getElementById("pod");
@@ -18,15 +20,39 @@
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var KEY = "ltl-player-" + document.documentElement.getAttribute("data-theme"); /* each theme has its own track, so keep their play positions apart */
 
-  var MAIN = { url: "assets/audio/hien-thien-duyen.mp3", artist: "Vietsub · Pinyin", title: "Hiện Thiên Duyên", main: true };
+  var TRACKS = [
+    { url: "assets/audio/hien-thien-duyen.mp3", artist: "Vietsub · Pinyin", title: "Hiện Thiên Duyên", builtin: true },
+    { url: "assets/audio/ba-ho-thuyet.mp3", artist: "Bá Tước Johnny · Đường Bá Hổ Annie", title: "Bá Hổ Thuyết · 伯虎说", builtin: true }
+  ];
 
   var audio = new Audio();
   audio.preload = "metadata";
-  var tracks = [MAIN];
-  var idx = 0;
+  var tracks = TRACKS.slice();
   var playing = false;
   var saved = null;
   try { saved = JSON.parse(sessionStorage.getItem(KEY) || "null"); } catch (e) {}
+  var idx = saved && saved.i >= 0 && saved.i < TRACKS.length ? saved.i : 0; /* come back to the same song */
+  var resume = saved; /* position to restore once the track's metadata is in; cleared when the person picks a track */
+
+  /* Volume fades. Browsers that lock volume (iOS) just ignore them. */
+  var fadeRaf = 0;
+  function fadeTo(v, ms) {
+    cancelAnimationFrame(fadeRaf);
+    if (reduce || !ms) { audio.volume = v; return; }
+    var from = audio.volume, t0 = performance.now();
+    (function step(now) {
+      var k = Math.min(1, Math.max(0, (now - t0) / ms));
+      audio.volume = from + (v - from) * k;
+      if (k < 1) fadeRaf = requestAnimationFrame(step);
+    })(t0);
+  }
+  /* Arriving from a theme switch: start silent, then swell as the curtain lifts. */
+  if (window.LTLTheme && window.LTLTheme.arriving) {
+    audio.volume = 0;
+    window.addEventListener("ltl:theme-lift", function () { fadeTo(1, 1100); });
+    setTimeout(function () { if (audio.volume === 0) fadeTo(1, 600); }, 5000); /* safety */
+  }
+  window.addEventListener("ltl:theme-leave", function () { if (playing) fadeTo(0, 380); persist(); });
 
   function ui() {
     pod.classList.toggle("playing", playing);
@@ -55,6 +81,7 @@
 
   function loadIdx(i, autoplay) {
     idx = i;
+    resume = null;
     audio.pause();
     audio.loop = tracks.length === 1;
     audio.src = tracks[idx].url;
@@ -64,7 +91,7 @@
   function fail() {
     playing = false;
     ui();
-    show("error", tracks[idx].main ? "Add assets/audio/hien-thien-duyen.mp3" : "This file can't be played here");
+    show("error", tracks[idx].builtin ? "Add " + tracks[idx].url : "This file can't be played here");
   }
   function play() {
     var p = audio.play();
@@ -89,10 +116,10 @@
   audio.addEventListener("ended", function () { loadIdx((idx + 1) % tracks.length, true); });
   audio.addEventListener("error", fail);
   audio.addEventListener("loadedmetadata", function () {
-    if (saved && tracks[idx].main) {
-      if (saved.t > 0 && saved.t < audio.duration) { try { audio.currentTime = saved.t; } catch (e) {} }
-      var again = saved.playing;
-      saved = null;
+    if (resume && tracks[idx].builtin) {
+      if (resume.t > 0 && resume.t < audio.duration) { try { audio.currentTime = resume.t; } catch (e) {} }
+      var again = resume.playing;
+      resume = null;
       if (again) play();
     }
   });
@@ -115,7 +142,7 @@
 
   function persist() {
     try {
-      if (tracks[idx] && tracks[idx].main) sessionStorage.setItem(KEY, JSON.stringify({ t: audio.currentTime || 0, playing: playing }));
+      if (tracks[idx] && tracks[idx].builtin) sessionStorage.setItem(KEY, JSON.stringify({ i: idx, t: audio.currentTime || 0, playing: playing }));
     } catch (e) {}
   }
   window.addEventListener("pagehide", persist);
@@ -126,8 +153,8 @@
     if (playing) persist();
   }, 500);
 
-  audio.loop = true;
-  audio.src = MAIN.url;
-  show(MAIN.artist, MAIN.title);
+  audio.loop = tracks.length === 1;
+  audio.src = tracks[idx].url;
+  show(tracks[idx].artist, tracks[idx].title);
   ui();
 })();
